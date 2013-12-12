@@ -67,4 +67,23 @@ describe LetterOpener::DeliveryMethod do
     its(:contents) { should include("Hello") }
     its(:contents) { should include("World!") }
   end
+
+
+  it "saves text into html document when deliver! is called" do
+    Launchy.should_receive(:open)
+    mail = Mail.new do
+      from    'foo@example.com'
+      to      'bar@example.com'
+      subject 'Hello'
+      body    'World!'
+    end
+
+    mail.deliver!
+
+    text = File.read(Dir["#{@location}/*/plain.html"].first)
+    text.should include("foo@example.com")
+    text.should include("bar@example.com")
+    text.should include("Hello")
+    text.should include("World!")
+  end
 end
